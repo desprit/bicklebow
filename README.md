@@ -18,6 +18,8 @@ virtualenv -p python3.8 venv
 source venv/bin/activate
 # Install dependencies
 pip install -r api/requirements.txt
+# Initialize database
+python api/src/database.py
 ```
 
 Optionally create `.env` file in the root folder with the following content:
