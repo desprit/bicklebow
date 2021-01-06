@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Optionally create `.env` file in the root folder with the following content:
 
 ```sh
-PYTHONPATH=/home/desprit/projects/desprit-media/bicklebow
+PYTHONPATH=PATH_TO_ROOT_FOLDER
 ENVIRONMENT=testing
 BOT_TOKEN=TOKEN_OBTAINED_FROM_BOT_FATHER
 SERVER_IP=IP_ADDRESS_OF_YOUR_SERVER (only needed when using webhooks)
