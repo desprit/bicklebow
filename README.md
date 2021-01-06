@@ -3,7 +3,7 @@
 Telegram bot that connects to your Tinkoff portoflio through the API, extracts open positions and allows you to create alerts on the market spikes.
 To obtain TinkoffAPI token you have to be a client of Tinkoff Invest. More info [here](https://tinkoffcreditsystems.github.io/invest-openapi/)
 
-![](https://github.com/desprit/bicklebow/blob/master/public/screenshots/mobile.jpg?raw=true | width=200)
+<img src="https://github.com/desprit/bicklebow/blob/master/public/screenshots/mobile.jpg?raw=true" width="200" />
 
 # Installation (tested on Ubuntu 18.04)
 
