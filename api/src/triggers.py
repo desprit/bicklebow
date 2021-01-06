@@ -28,8 +28,7 @@ def main(user_id: Optional[int] = None) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("user id is required")
-        sys.exit(0)
-    user_id = sys.argv[1]
-    main(int(user_id))
+    user_id = None
+    if len(sys.argv) == 2:
+        user_id = int(sys.argv[1])
+    main(user_id)
