@@ -1,6 +1,5 @@
 black
 coverage
-fastapi
 flake8
 loguru
 pytest

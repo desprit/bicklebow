@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     SALT = "$3b$12$n9D6hxmvZ/tV0peAW4Npbg"
     LOG_PATH = "/var/log/bicklebow"
     BOT_TOKEN: str = os.environ.get("BOT_TOKEN")
-    CERTIFICATE = f"{ROOT_PATH}/configs/cert.pem"
+    CERTIFICATE = f"{ROOT_PATH}/configs/id_rsa.pub"
     SERVER_IP: str = os.environ.get("SERVER_IP")
 
     class Config:
