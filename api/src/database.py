@@ -41,6 +41,7 @@ class Alert(Base):
 
     id = Column(Integer, primary_key=True)
 
+    ticker = Column(String(16))
     created_at = Column(TIMESTAMP, default=dt.utcnow(), nullable=False)
     updated_at = Column(TIMESTAMP, default=dt.utcnow(), nullable=False)
 
@@ -91,5 +92,5 @@ def drop_db() -> None:
 
 
 if __name__ == "__main__":
-    drop_db()
+    # drop_db()
     init_db()

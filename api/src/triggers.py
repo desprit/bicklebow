@@ -22,9 +22,11 @@ def main(user_id: Optional[int] = None) -> None:
             ]
             for position in positions:
                 for t in triggers:
-                    if t.is_triggered(position) and not utils.should_ignore(t):
+                    if t.is_triggered(position) and not utils.should_ignore(
+                        t, position
+                    ):
                         utils.send_alert(user, t, position)
-                        utils.save_alert(user, t, session)
+                        utils.save_alert(user, t, position.ticker, session)
 
 
 if __name__ == "__main__":

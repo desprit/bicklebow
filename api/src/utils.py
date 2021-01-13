@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import telegram
 from sqlalchemy import desc
 from sqlalchemy.orm.session import Session
+from tinvest.schemas import PortfolioPosition
 
 from api.src import database, schemas
 from api.src.config import settings
@@ -96,13 +97,15 @@ def send_alert(
     client.sendMessage(chat_id=user.chat_id, text=text)
 
 
-def save_alert(user: schemas.User, trigger: schemas.Trigger, session: Session) -> None:
-    alert = {"trigger_id": trigger.id, "user_id": user.id}
+def save_alert(
+    user: schemas.User, trigger: schemas.Trigger, ticker: str, session: Session
+) -> None:
+    alert = {"trigger_id": trigger.id, "user_id": user.id, "ticker": ticker}
     session.add(database.Alert(**alert))
     session.commit()
 
 
-def should_ignore(trigger: schemas.Trigger) -> bool:
+def should_ignore(trigger: schemas.Trigger, position: PortfolioPosition) -> bool:
     """
     Ignore trigger if alert already present in the database.
     """
@@ -117,6 +120,7 @@ def should_ignore(trigger: schemas.Trigger) -> bool:
         query = session.query(database.Alert)
         query = query.order_by(desc(database.Alert.created_at))
         query = query.filter(database.Alert.trigger_id == trigger.id)
+        query = query.filter(database.Alert.ticker == position.ticker)
         trigger_alerts: List[database.Alert] = query.all()
         for alert in trigger_alerts:
             if alert.created_at > alert_threshold:
