@@ -111,6 +111,8 @@ def should_ignore(trigger: schemas.Trigger) -> bool:
         alert_threshold = datetime.now() - timedelta(days=1)
     if trigger.reference == schemas.CandleRange.CANDLE_1M:
         alert_threshold = datetime.now() - timedelta(days=30)
+    if trigger.reference == schemas.TriggerReference.PORTFOLIO:
+        alert_threshold = datetime.now() - timedelta(days=14)
     with database.get_db_session() as session:
         query = session.query(database.Alert)
         query = query.order_by(desc(database.Alert.created_at))
