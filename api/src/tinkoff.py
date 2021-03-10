@@ -1,13 +1,17 @@
-import sys
+import time
 import json
 import datetime
-from typing import List, Dict, Tuple
+from typing import List, Dict, Optional, Tuple
 
+import typer
 import tinvest
 import requests
 from tinvest.schemas import CandleResolution
 
-from api.src import schemas, database
+from api.src import schemas, database, utils
+
+
+app = typer.Typer()
 
 
 def create_market_values_from_response(
@@ -126,36 +130,108 @@ def get_market_values(
     return market_values
 
 
-def get_user_positions(user: schemas.User) -> List[schemas.PortfolioPosition]:
+def get_user(user_id: int) -> Optional[schemas.User]:
+    with database.get_db_session() as session:
+        user = session.query(database.User).filter(database.User.id == user_id).first()
+        if not user:
+            print(f"User with ID {user_id} not found")
+            return
+        return schemas.User.from_model(user)
+
+
+def get_candles(figi: str) -> List[schemas.Candle]:
+    start_date = datetime.datetime(2020, 1, 1)
+    end_date = datetime.datetime(2020, 12, 31)
+    with database.get_db_session() as session:
+        user = session.query(database.User).first()
+        client = tinvest.SyncClient(user.token)
+    candles = set()
+    f = datetime.datetime.now() - datetime.timedelta(days=65)
+    t = datetime.datetime.now() - datetime.timedelta(days=60)
+    current_date = start_date
+    while current_date < end_date:
+        f = current_date
+        t = f + datetime.timedelta(days=5)
+        print(f"Extracting candles between {f.date()} and {t.date()}...")
+        response = client.get_market_candles(figi, f, t, CandleResolution.hour)
+        for i in response.payload.candles:
+            candles.add(
+                schemas.Candle(
+                    time=i.time,
+                    figi=i.figi,
+                    o=float(i.o),
+                    c=float(i.c),
+                    h=float(i.h),
+                    l=float(i.l),
+                )
+            )
+        current_date += datetime.timedelta(days=4)
+        time.sleep(1)
+    return candles
+
+
+def save_candles(figi: str, candles: List[schemas.Candle]):
+    candles_sorted = list(candles)
+    candles_sorted.sort(key=lambda x: x.time)
+    with open(f"./data/candles/{figi}-1h.txt", "w") as w:
+        for candle in candles_sorted:
+            w.write(candle.to_json())
+            w.write("\n")
+
+
+@app.command()
+def get_user_positions(user_id: int) -> List[schemas.PortfolioPosition]:
     """
     Return positions for a given user together with current market price
     and candle prices for the past day, week and month.
     """
+    user = get_user(user_id)
+    if not user:
+        return []
     client = tinvest.SyncClient(user.token)
     response = client.get_portfolio()
     portfolio_markets = get_portfolio_markets_from_response(response)
     market_values = get_market_values(client, portfolio_markets)
     portfolio_positions = get_portfolio_positions_from_response(response, market_values)
+    print(portfolio_positions)
     return portfolio_positions
 
 
-def main(user_id: int) -> None:
-    """
-    Return positions for a given user.
-    """
+@app.command()
+def download_candles(figi: str) -> None:
+    candles = get_candles(figi)
+    save_candles(figi, candles)
+
+
+@app.command()
+def get_markets(user_id: int) -> None:
     with database.get_db_session() as session:
-        user = session.query(database.User).filter(database.User.id == user_id).first()
+        user = utils.get_user_by_id(user_id, session)
         if not user:
-            print(f"User with ID {user_id} not found")
-            sys.exit(0)
-        positions = get_user_positions(user)
-        print(positions)
-        return positions
+            return
+    client = tinvest.SyncClient(user.token)
+    response = client.get_market_stocks()
+    for instrument in response.payload.instruments:
+        print(
+            instrument.figi,
+            instrument.name,
+            instrument.ticker,
+            instrument.lot,
+            instrument.min_quantity,
+        )
+
+
+@app.command()
+def get_positions(user_id: int) -> None:
+    with database.get_db_session() as session:
+        user = utils.get_user_by_id(user_id, session)
+        if not user:
+            return
+    client = tinvest.SyncClient(user.token)
+    response = client.get_portfolio()
+    for position in response.payload.positions:
+        print(position.__dict__)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("user id in required")
-        sys.exit(0)
-    user_id = sys.argv[1]
-    main(int(user_id))
+    app()

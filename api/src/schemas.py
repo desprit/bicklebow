@@ -1,3 +1,4 @@
+import json
 import datetime
 from enum import Enum
 from typing import Dict, Optional
@@ -8,6 +9,11 @@ from tinvest import schemas
 from api.src import database
 
 
+class ServerStartMode(Enum):
+    POLLING = "POLLING"
+    WEBHOOK = "WEBHOOK"
+
+
 class CandleRange(Enum):
     CANDLE_1D = "CANDLE_1D"  # Candle for the past day
     CANDLE_1W = "CANDLE_1W"  # Candle for the past week
@@ -15,6 +21,13 @@ class CandleRange(Enum):
 
 
 class TriggerReference(Enum):
+    """
+    Trigger can either be fired based on a current portoflio positions
+    or based on a candle for some previous period.
+    For example, we may want to fire a trigger when current market price
+    is higher than that price for the previous day by some amount.
+    """
+
     CANDLE = CandleRange  # Candle for the past period
     PORTFOLIO = "PORTFOLIO"  # Average portfolio price
 
@@ -40,6 +53,33 @@ class PortfolioPosition:
     current_price: float
     candle_prices: Dict[str, float]
     portfolio_price: float
+
+
+@dataclass(frozen=True)
+class Position:
+    figi: str
+    price: float
+    value: float
+    time: datetime.datetime
+
+
+@dataclass(frozen=True)
+class ClosedPosition:
+    position: Position
+    close_time: datetime.datetime
+    close_price: float
+
+
+@dataclass(frozen=True)
+class Rule:
+    open_threshold: Optional[float] = None
+    close_threshold: Optional[float] = None
+
+
+@dataclass(frozen=True)
+class Deposit:
+    time: datetime.datetime
+    amount: float
 
 
 @dataclass
@@ -182,6 +222,35 @@ class Trigger:
         }
 
 
-class ServerStartMode(Enum):
-    POLLING = "POLLING"
-    WEBHOOK = "WEBHOOK"
+@dataclass(frozen=True)
+class Candle:
+    figi: str
+    o: float
+    c: float
+    h: float
+    l: float
+    time: datetime.datetime
+
+    def to_json(self):
+        return json.dumps(
+            {
+                "figi": self.figi,
+                "o": self.o,
+                "c": self.c,
+                "h": self.h,
+                "l": self.l,
+                "time": self.time.isoformat(),
+            }
+        )
+
+    @classmethod
+    def from_json(cls, values: str):
+        values = json.loads(values)
+        return cls(
+            figi=values["figi"],
+            o=values["o"],
+            c=values["c"],
+            h=values["h"],
+            l=values["l"],
+            time=datetime.datetime.fromisoformat(values["time"]),
+        )

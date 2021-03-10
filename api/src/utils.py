@@ -89,6 +89,14 @@ def get_user_by_username(username: str, session: Session) -> Optional[schemas.Us
     return None
 
 
+def get_user_by_id(user_id: str, session: Session) -> Optional[schemas.User]:
+    query = session.query(database.User)
+    user = query.filter(database.User.id == user_id).first()
+    if user:
+        return schemas.User.from_model(user)
+    return None
+
+
 def send_alert(
     user: schemas.User, trigger: schemas.Trigger, position: schemas.PortfolioPosition
 ) -> None:

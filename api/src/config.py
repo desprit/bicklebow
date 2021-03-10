@@ -9,6 +9,7 @@ from pydantic import BaseSettings
 
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_PATH = f"{ROOT_PATH}/data"
 ENVIRONMENT: str = os.environ.get("ENVIRONMENT")
 
 
@@ -25,7 +26,7 @@ class Settings(BaseSettings):
 
     @property
     def SQLITE_URI(self):
-        return f"sqlite:///{ROOT_PATH}/api/src/bicklebow.db"
+        return f"sqlite:///{ROOT_PATH}/data/bicklebow.db"
 
 
 @lru_cache()
