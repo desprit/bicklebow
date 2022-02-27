@@ -18,11 +18,11 @@ struct Pipeline {
 }
 
 /// `Pipeline` defines steps the data pass:
-/// 1. Pull data from the Source (e.g. broker API)
-/// 2. Save data to the local database
-/// 3. Apply logic to find if data should be treated as a signal
-/// 4. Apply filters to drop signals that we are not interested in
-/// 5. Emit reaction (e.g. send alert message or maybe trigger broker API)
+///  - pull data from the Source (e.g. broker API)
+///  - save data to the local database
+///  - apply logic to find if data should be treated as a signal
+///  - apply filters to drop signals that we are not interested in
+///  - emit reaction (e.g. send alert message or maybe trigger broker API)
 impl Pipeline {
     fn new(sources: Vec<Box<dyn Source>>) -> Self {
         Pipeline { sources }
@@ -46,9 +46,9 @@ impl Pipeline {
 }
 
 fn main() {
-    let sources: Vec<Box<dyn Source>> = vec![
+    Pipeline::new(vec![
         Box::new(TinkoffMarketNewsSource {}),
         Box::new(TinkoffMarketValuesSource {}),
-    ];
-    Pipeline::new(sources).run();
+    ])
+    .run();
 }

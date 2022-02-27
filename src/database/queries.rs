@@ -4,18 +4,32 @@ use rusqlite::params;
 pub fn create_source_data(data: &models::SourceData) -> Result<usize, rusqlite::Error> {
     let conn = utils::get_conn()?;
     match data {
-        models::SourceData::Metric { source, is_signal, created_at, value, market_id } => {
-            conn.execute(
-                "INSERT OR IGNORE INTO metrics (source, is_signal, value, market_id, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
-                params![source, is_signal, value, market_id, created_at],
-            )
-        },
-        models::SourceData::News { source, is_signal, created_at, value, market_id } =>  {
-            conn.execute(
-                "INSERT OR IGNORE INTO news (source, is_signal, value, market_id, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
-                params![source, is_signal, value, market_id, created_at],
-            )
-        }
+        models::SourceData::Metric {
+            source,
+            is_signal,
+            created_at,
+            value,
+            market_id,
+        } => conn.execute(
+            "
+                    INSERT OR IGNORE INTO metrics (source, is_signal, value, market_id, created_at)
+                    VALUES (?1, ?2, ?3, ?4, ?5)
+                ",
+            params![source, is_signal, value, market_id, created_at],
+        ),
+        models::SourceData::News {
+            source,
+            is_signal,
+            created_at,
+            value,
+            market_id,
+        } => conn.execute(
+            "
+                    INSERT OR IGNORE INTO news (source, is_signal, value, market_id, created_at)
+                    VALUES (?1, ?2, ?3, ?4, ?5)
+                ",
+            params![source, is_signal, value, market_id, created_at],
+        ),
     }
 }
 
