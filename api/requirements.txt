@@ -1,9 +1,0 @@
-black
-coverage
-flake8
-loguru
-pytest
-python-dotenv
-sqlalchemy
-python-telegram-bot
-tinvest
