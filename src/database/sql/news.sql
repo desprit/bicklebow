@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS news (
-    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-    `source` VARCHAR(96) NOT NULL,
-    `is_signal` BOOLEAN NOT NULL,
-    `value` TEXT NOT NULL,
-    `market_id` INT NOT NULL,
-    `created_at` TIMESTAMP NULL DEFAULT NULL
-);

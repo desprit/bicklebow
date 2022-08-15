@@ -20,13 +20,13 @@ impl fmt::Display for CustomError {
 }
 
 pub fn get_conn() -> Result<rusqlite::Connection, rusqlite::Error> {
-    let conn = Connection::open(SETTINGS.sqlite.path);
+    let conn = Connection::open(SETTINGS.sqlite.path.as_str());
     conn
 }
 
 pub fn delete_database() -> std::io::Result<()> {
-    if std::path::Path::new(SETTINGS.sqlite.path).exists() {
-        return std::fs::remove_file(SETTINGS.sqlite.path);
+    if std::path::Path::new(SETTINGS.sqlite.path.as_str()).exists() {
+        return std::fs::remove_file(SETTINGS.sqlite.path.as_str());
     }
     Ok(())
 }
@@ -106,9 +106,9 @@ mod tests {
     #[test]
     #[serial]
     fn test_get_conn_creates_db_file() {
-        std::fs::remove_file(super::SETTINGS.sqlite.path).ok();
+        std::fs::remove_file(super::SETTINGS.sqlite.path.as_str()).ok();
         super::get_conn().ok();
-        assert!(std::path::Path::new(super::SETTINGS.sqlite.path).exists());
+        assert!(std::path::Path::new(super::SETTINGS.sqlite.path.as_str()).exists());
     }
 
     #[test]
@@ -122,9 +122,9 @@ mod tests {
     #[serial]
     fn test_delete_database_should_delete_file_when_exists() {
         super::get_conn().unwrap();
-        assert!(std::path::Path::new(super::SETTINGS.sqlite.path).exists());
+        assert!(std::path::Path::new(super::SETTINGS.sqlite.path.as_str()).exists());
         super::delete_database().unwrap();
-        assert!(!std::path::Path::new(super::SETTINGS.sqlite.path).exists());
+        assert!(!std::path::Path::new(super::SETTINGS.sqlite.path.as_str()).exists());
     }
 
     #[test]

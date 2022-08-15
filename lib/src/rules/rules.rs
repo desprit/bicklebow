@@ -1,6 +1,6 @@
-use crate::database::models::SourceData;
+use crate::database::models::metrics::Metric;
 
-impl SourceData {
+impl Metric {
     pub fn apply_is_signal_logic(&self) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }

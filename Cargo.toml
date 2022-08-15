@@ -1,17 +1,3 @@
-[package]
-name = "bicklebow"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-lazy_static = "1.4.0"
-rand = "0.8.5"
-
-[dependencies.rusqlite]
-version = "0.26.0"
-features = ["bundled"]
-
-[dev-dependencies]
-serial_test = "*"
+[workspace]
+members = ["cli", "lib", "bot"]
+default-members = ["cli"]

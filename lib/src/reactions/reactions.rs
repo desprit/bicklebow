@@ -1,6 +1,6 @@
-use crate::database::models::SourceData;
+use crate::database::models::metrics::Metric;
 
-impl SourceData {
+impl Metric {
     pub fn react(&self) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }

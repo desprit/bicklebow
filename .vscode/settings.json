@@ -1,0 +1,8 @@
+{
+    "workbench.colorCustomizations": {
+      "[CodePen Dark High Contrast]": {
+        "titleBar.activeBackground": "#d9343c",
+        "titleBar.activeForeground": "#000"
+      }
+    }
+  }

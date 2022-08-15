@@ -1,0 +1,9 @@
+[package]
+name = "bicklebow-cli"
+version = "0.0.1"
+authors = ["Aleksey Bondarev <a.bondarev.it@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+bicklebow-lib = { path = "../lib" }
+tokio = { version = "1.17.0", features = ["full"] }
